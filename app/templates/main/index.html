@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    Welcome to Questionnaire Manager
+                </h1>
+                <p class="lead mb-4">
+                    Create, manage, and analyze questionnaires with advanced analytics and reporting. 
+                    Build engaging surveys with multiple question types and track responses in real-time.
+                </p>
+                {% if not current_user.is_authenticated %}
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg">
+                        Get Started
+                    </a>
+                    <a href="{{ url_for('questionnaire.list_questionnaires') }}" class="btn btn-outline-light btn-lg">
+                        Browse Questionnaires
+                    </a>
+                </div>
+                {% else %}
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('main.dashboard') }}" class="btn btn-light btn-lg">
+                        Go to Dashboard
+                    </a>
+                    {% if current_user.is_creator() %}
+                    <a href="{{ url_for('questionnaire.create') }}" class="btn btn-outline-light btn-lg">
+                        Create Questionnaire
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-lg-6">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/7c831a61-76d7-4896-90dd-a589c0c66bff.png" 
+                     alt="Advanced questionnaire management dashboard interface with modern analytics" 
+                     class="img-fluid rounded shadow-lg">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title">{{ stats.total_questionnaires }}</h3>
+                        <p class="card-text">Active Questionnaires</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title">{{ stats.total_responses }}</h3>
+                        <p class="card-text">Total Responses</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card stats-card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title">{{ stats.total_users }}</h3>
+                        <p class="card-text">Registered Users</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="display-5 fw-bold">Powerful Features</h2>
+                <p class="lead">Everything you need to create and manage professional questionnaires</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <span class="display-4">📝</span>
+                        </div>
+                        <h5 class="card-title">Multiple Question Types</h5>
+                        <p class="card-text">Single choice, multiple choice, open-ended, and 1-5 scale questions.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <span class="display-4">📊</span>
+                        </div>
+                        <h5 class="card-title">Advanced Analytics</h5>
+                        <p class="card-text">Interactive charts and comprehensive statistics for response analysis.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <span class="display-4">👥</span>
+                        </div>
+                        <h5 class="card-title">User Management</h5>
+                        <p class="card-text">Role-based access control with admin, creator, and user roles.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <span class="display-4">🔒</span>
+                        </div>
+                        <h5 class="card-title">Privacy Controls</h5>
+                        <p class="card-text">Public/private questionnaires with anonymous response options.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Questionnaires Section -->
+{% if recent_questionnaires %}
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 mb-4">
+                <h2 class="display-6 fw-bold">Recent Questionnaires</h2>
+                <p class="lead">Explore the latest questionnaires from our community</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            {% for questionnaire in recent_questionnaires %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ questionnaire.title }}</h5>
+                        <p class="card-text">
+                            {% if questionnaire.description %}
+                                {{ questionnaire.description[:100] }}{% if questionnaire.description|length > 100 %}...{% endif %}
+                            {% else %}
+                                No description available.
+                            {% endif %}
+                        </p>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                by {{ questionnaire.creator.username }}
+                            </small>
+                            <span class="badge bg-primary">{{ questionnaire.get_response_count() }} responses</span>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{{ url_for('questionnaire.view', id=questionnaire.id) }}" class="btn btn-outline-primary btn-sm">
+                            View Details
+                        </a>
+                        {% if questionnaire.can_user_respond(current_user) %}
+                        <a href="{{ url_for('questionnaire.respond', id=questionnaire.id) }}" class="btn btn-primary btn-sm">
+                            Take Survey
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{{ url_for('questionnaire.list_questionnaires') }}" class="btn btn-primary btn-lg">
+                View All Questionnaires
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Call to Action Section -->
+{% if not current_user.is_authenticated %}
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="display-6 fw-bold mb-4">Ready to Get Started?</h2>
+                <p class="lead mb-4">
+                    Join thousands of users who are already creating amazing questionnaires 
+                    and gathering valuable insights from their audience.
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg">
+                        Create Account
+                    </a>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg">
+                        Sign In
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

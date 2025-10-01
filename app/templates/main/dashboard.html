@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Dashboard</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    {% if current_user.is_creator() %}
+                    <a href="{{ url_for('questionnaire.create') }}" class="btn btn-primary">
+                        Create New Questionnaire
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- User Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ user_stats.created }}</h3>
+                    <p class="card-text">Questionnaires Created</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card stats-card h-100">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ user_stats.responded }}</h3>
+                    <p class="card-text">Questionnaires Responded</p>
+                </div>
+            </div>
+        </div>
+        
+        {% if current_user.is_admin() and system_stats %}
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ system_stats.active_users }}</h3>
+                    <p class="card-text">Active Users</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ system_stats.complete_responses }}</h3>
+                    <p class="card-text">Total Responses</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="row">
+        <!-- My Questionnaires -->
+        {% if current_user.is_creator() %}
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">My Recent Questionnaires</h5>
+                    <a href="{{ url_for('questionnaire.create') }}" class="btn btn-outline-primary btn-sm">
+                        Create New
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if user_questionnaires %}
+                    <div class="list-group list-group-flush">
+                        {% for questionnaire in user_questionnaires %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ questionnaire.title }}</h6>
+                                <small class="text-muted">{{ questionnaire.get_response_count() }} responses</small>
+                            </div>
+                            <p class="mb-1">
+                                {% if questionnaire.description %}
+                                    {% set desc_preview = questionnaire.description[:100] %}
+                                    {{ desc_preview }}{% if questionnaire.description|length > 100 %}...{% endif %}
+                                {% else %}
+                                    No description
+                                {% endif %}
+                            </p>
+                            <small class="text-muted">
+                                <span class="badge {% if questionnaire.is_active %}bg-success{% else %}bg-secondary{% endif %} me-2">
+                                    {% if questionnaire.is_active %}Active{% else %}Inactive{% endif %}
+                                </span>
+                                <span class="badge {% if questionnaire.is_public %}bg-primary{% else %}bg-warning{% endif %}">
+                                    {% if questionnaire.is_public %}Public{% else %}Private{% endif %}
+                                </span>
+                            </small>
+                            <div class="mt-2">
+                                <a href="{{ url_for('questionnaire.view', id=questionnaire.id) }}" class="btn btn-outline-primary btn-sm">View</a>
+                                <a href="{{ url_for('questionnaire.edit', id=questionnaire.id) }}" class="btn btn-outline-secondary btn-sm">Edit</a>
+                                <a href="{{ url_for('questionnaire.responses', id=questionnaire.id) }}" class="btn btn-outline-info btn-sm">Responses</a>
+                                <a href="{{ url_for('questionnaire.analytics', id=questionnaire.id) }}" class="btn btn-outline-success btn-sm">Analytics</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center py-4">
+                        You haven't created any questionnaires yet.
+                        <br>
+                        <a href="{{ url_for('questionnaire.create') }}" class="btn btn-primary mt-2">Create Your First Questionnaire</a>
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Available Questionnaires -->
+        <div class="col-lg-{% if current_user.is_creator() %}6{% else %}12{% endif %} mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Available Questionnaires</h5>
+                    <a href="{{ url_for('questionnaire.list_questionnaires') }}" class="btn btn-outline-primary btn-sm">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if available_questionnaires %}
+                    <div class="list-group list-group-flush">
+                        {% for questionnaire in available_questionnaires %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ questionnaire.title }}</h6>
+                                <small class="text-muted">by {{ questionnaire.creator.username }}</small>
+                            </div>
+                            <p class="mb-1">
+                                {% if questionnaire.description %}
+                                    {% set desc_preview = questionnaire.description[:100] %}
+                                    {{ desc_preview }}{% if questionnaire.description|length > 100 %}...{% endif %}
+                                {% else %}
+                                    No description
+                                {% endif %}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">{{ questionnaire.get_response_count() }} responses</small>
+                                <div>
+                                    <a href="{{ url_for('questionnaire.view', id=questionnaire.id) }}" class="btn btn-outline-primary btn-sm">View</a>
+                                    {% if questionnaire.can_user_respond(current_user) %}
+                                    <a href="{{ url_for('questionnaire.respond', id=questionnaire.id) }}" class="btn btn-primary btn-sm">Take Survey</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center py-4">
+                        No questionnaires available at this time.
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Responses -->
+    {% if user_responses %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">My Recent Responses</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Questionnaire</th>
+                                    <th>Submitted</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for response in user_responses %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ response.questionnaire.title }}</strong>
+                                        <br>
+                                        <small class="text-muted">by {{ response.questionnaire.creator.username }}</small>
+                                    </td>
+                                    <td>{{ response.submitted_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        <span class="badge bg-success">Complete</span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('questionnaire.view', id=response.questionnaire.id) }}" class="btn btn-outline-primary btn-sm">View Questionnaire</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
