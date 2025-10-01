@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Questionari Online</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 Gestione Questionari Online</h1>
+            <p class="subtitle">Crea, gestisci e modifica i tuoi questionari</p>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="list">Elenco Questionari</button>
+            <button class="tab-btn" data-tab="create">Nuovo Questionario</button>
+        </nav>
+
+        <main>
+            <!-- Elenco Questionari -->
+            <section id="list-section" class="tab-content active">
+                <div class="section-header">
+                    <h2>I Tuoi Questionari</h2>
+                </div>
+                <div id="questionnaires-list" class="questionnaires-grid">
+                    <!-- I questionari verranno inseriti qui dinamicamente -->
+                </div>
+                <div id="empty-state" class="empty-state">
+                    <p>📝 Nessun questionario disponibile</p>
+                    <p>Inizia creando il tuo primo questionario!</p>
+                </div>
+            </section>
+
+            <!-- Creazione/Modifica Questionario -->
+            <section id="create-section" class="tab-content">
+                <div class="section-header">
+                    <h2 id="form-title">Crea Nuovo Questionario</h2>
+                </div>
+                <form id="questionnaire-form" class="questionnaire-form">
+                    <input type="hidden" id="questionnaire-id">
+                    
+                    <div class="form-group">
+                        <label for="questionnaire-title">Titolo del Questionario *</label>
+                        <input type="text" id="questionnaire-title" required 
+                               placeholder="Es: Sondaggio Soddisfazione Cliente">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="questionnaire-description">Descrizione</label>
+                        <textarea id="questionnaire-description" rows="3"
+                                  placeholder="Breve descrizione del questionario..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="questions-header">
+                            <label>Domande</label>
+                            <button type="button" id="add-question-btn" class="btn btn-secondary">
+                                ➕ Aggiungi Domanda
+                            </button>
+                        </div>
+                        <div id="questions-container" class="questions-container">
+                            <!-- Le domande verranno inserite qui -->
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">💾 Salva Questionario</button>
+                        <button type="button" id="cancel-btn" class="btn btn-secondary">❌ Annulla</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Visualizzazione/Risposta Questionario -->
+            <section id="view-section" class="tab-content">
+                <div class="section-header">
+                    <h2 id="view-title">Questionario</h2>
+                    <button id="back-to-list-btn" class="btn btn-secondary">← Torna all'elenco</button>
+                </div>
+                <div id="questionnaire-view" class="questionnaire-view">
+                    <!-- Il questionario verrà mostrato qui -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Template per la domanda -->
+    <template id="question-template">
+        <div class="question-item">
+            <div class="question-header">
+                <span class="question-number"></span>
+                <button type="button" class="btn-icon btn-delete" title="Elimina domanda">🗑️</button>
+                <button type="button" class="btn-icon btn-move-up" title="Sposta su">⬆️</button>
+                <button type="button" class="btn-icon btn-move-down" title="Sposta giù">⬇️</button>
+            </div>
+            <div class="form-group">
+                <label>Testo della domanda *</label>
+                <input type="text" class="question-text" required placeholder="Inserisci la domanda...">
+            </div>
+            <div class="form-group">
+                <label>Tipo di risposta</label>
+                <select class="question-type">
+                    <option value="text">Testo breve</option>
+                    <option value="textarea">Testo lungo</option>
+                    <option value="radio">Scelta multipla (singola)</option>
+                    <option value="checkbox">Scelta multipla (multipla)</option>
+                    <option value="number">Numero</option>
+                </select>
+            </div>
+            <div class="form-group options-group" style="display: none;">
+                <label>Opzioni (una per riga)</label>
+                <textarea class="question-options" rows="3" 
+                          placeholder="Opzione 1&#10;Opzione 2&#10;Opzione 3"></textarea>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" class="question-required">
+                    Obbligatoria
+                </label>
+            </div>
+        </div>
+    </template>
+
+    <script src="app.js"></script>
+</body>
+</html>
